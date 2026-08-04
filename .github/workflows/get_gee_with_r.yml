@@ -49,4 +49,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: weekly-extracted-r-data
-        path: weekly_gee_data.json
+        path: weekly_gee_data.csv
