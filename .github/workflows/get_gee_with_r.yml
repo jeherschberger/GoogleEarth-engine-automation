@@ -1,0 +1,37 @@
+name: Weekly Coordinate Batch Extraction
+
+on:
+  schedule:
+    # Runs every Sunday at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch: # Allows you to manually trigger it via the Actions tab
+
+jobs:
+  batch-extract:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install earthengine-api
+
+    - name: Run Batch GEE Extraction
+      env:
+        EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+      run: python get_data.R
+
+    - name: Upload Weekly Data Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: weekly-extracted-data
+        path: weekly_gee_data.json
+
