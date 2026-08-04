@@ -10,4 +10,4 @@ if (creds_json == "") {
 
 # 2. Initialize Earth Engine (Replace with your actual GCP Project ID)
 # rgee automatically manages the Python backend connection via reticulate
-ee_Initialize()
+ee_Initialize(project = "ee-jakeberger92")
