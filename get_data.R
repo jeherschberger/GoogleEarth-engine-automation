@@ -2,18 +2,16 @@ library(jsonlite)
 library(rgee)
 library(reticulate)
 
-
-use_virtualenv("rgee")
-
-ee_Initialize(drive = FALSE, gcs = FALSE)
-
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
-creds_json <- Sys.setenv(
-)
+creds_json <- fromJSON('private-key.json')
 
 if (creds_json == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
 }
+
+use_virtualenv("rgee")
+
+ee_Initialize(drive = FALSE, gcs = FALSE)
 
 # 2. Load data and wrapper functions ----
 ## load survey-level data (summarized from script 01)
