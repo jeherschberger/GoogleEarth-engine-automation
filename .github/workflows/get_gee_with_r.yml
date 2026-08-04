@@ -40,7 +40,7 @@ jobs:
           GEE_PRIVATE_KEY: ${{ secrets.EARTH_ENGINE_KEY }}
         run: |
              echo "$GEE_PRIVATE_KEY" > private-key.json
-                 source ~/.virtualenvs/rgee/bin/activate
+             source ~/.virtualenvs/rgee/bin/activate
              python -c "
                import ee
                import json
@@ -50,7 +50,7 @@ jobs:
                  creds['client_email'], 
                  'private-key.json'
                  )
-                 ee.Initialize(credentials)
-                 print('GEE authenticated via Python!')
+               ee.Initialize(credentials)
+               print('GEE authenticated via Python!')
                  "
              Rscript get_data.R
