@@ -12,10 +12,13 @@ if (creds_json$private_key == "") {
 use_virtualenv('rgee')
 
 # Initialize Earth Engine
-ee_Initialize(
-  drive = FALSE,
-  gcs = FALSE
+ee <- import("ee")
+credentials <- ee$ServiceAccountCredentials(
+  creds_json$client_email,
+  'private-key.json'
 )
+
+ee$Initialize(credentials)
 
 # 2. Load data and wrapper functions ----
 ## load survey-level data (summarized from script 01)
