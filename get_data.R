@@ -5,7 +5,7 @@ library(reticulate)
 
 use_virtualenv("rgee")
 
-ee_Initialize()
+ee_Initialize(drive = FALSE, gcs = FALSE)
 
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
 creds_json <- Sys.setenv(
