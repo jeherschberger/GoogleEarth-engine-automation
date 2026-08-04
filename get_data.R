@@ -21,7 +21,8 @@ ee_Initialize(
   drive = FALSE,
   gcs = FALSE,
   auth_mode = "gcloud",
-  quiet=TRUE
+  quiet=TRUE,
+  auth_quiet=TRUE
 )
 
 # 2. Load data and wrapper functions ----
