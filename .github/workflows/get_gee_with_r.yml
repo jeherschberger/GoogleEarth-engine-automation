@@ -32,7 +32,7 @@ jobs:
       - name: Authenticate GEE
         env:
           GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
-          GEE_PRIVATE_KEY: ${{ secrets.GEE_PRIVATE_KEY }}
+          GEE_PRIVATE_KEY: ${{ secrets.EARTH_ENGINE_KEY }}
         run: |
           echo "$GEE_PRIVATE_KEY" > private-key.json
           Rscript -e "
