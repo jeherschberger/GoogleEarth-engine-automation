@@ -26,12 +26,12 @@ jobs:
         shell: Rscript {0}
 
 
-      - name: Install rgee python
-        run:
-            Rscript -e "
-            library(rgee)
-            ee_install(py_env = 'rgee')
-            "
+      - name: Install rgee Python environment
+        run: |
+          Rscript -e "
+          library(rgee)
+          ee_install(py_env = 'rgee', confirm = FALSE)
+          "
          
       - name: Authenticate GEE
         env:
