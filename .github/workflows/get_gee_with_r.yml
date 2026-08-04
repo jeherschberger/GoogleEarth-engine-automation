@@ -1,37 +1,49 @@
-name: Weekly Coordinate Batch Extraction
+name: Weekly R Coordinate Batch Extraction
 
 on:
   schedule:
-    # Runs every Sunday at 00:00 UTC
     - cron: '0 0 * * 0'
-  workflow_dispatch: # Allows you to manually trigger it via the Actions tab
+  workflow_dispatch:
 
 jobs:
-  batch-extract:
+  batch-extract-r:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4
 
+    - name: Set up R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.3.2'     # 👈 Specify your exact R version here
+        use-public-rspm: true   # Ensures fast, pre-compiled binaries matching this version
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.10' # Keep this stable to support rgee's reticulate wrapper
 
-    - name: Install Dependencies
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libcurl4-openssl-dev libssl-dev libgdal-dev libproj-dev libgeos-dev
+
+    - name: Install Python and R Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install earthengine-api
+        pip install earthengine-api numpy
+        Rscript -e "install.packages(c('rgee', 'jsonlite', 'reticulate'))"
 
-    - name: Run Batch GEE Extraction
+    - name: Run R GEE Extraction
       env:
         EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
-      run: python get_data.R
+        # Automatically finds the exact path of the Python version configured above
+        RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python 
+      run: Rscript get_data.R
 
     - name: Upload Weekly Data Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: weekly-extracted-data
+        name: weekly-extracted-r-data
         path: weekly_gee_data.json
-
