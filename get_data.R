@@ -20,7 +20,7 @@ ee_Initialize(
   user = creds_json$client_email,
   drive = FALSE,
   gcs = FALSE,
-  auth_mode = "none",
+  auth_mode = "None",
   quiet=TRUE,
   auth_quiet=TRUE
 )
