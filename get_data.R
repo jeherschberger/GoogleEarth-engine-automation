@@ -9,7 +9,7 @@ if (creds_json$private_key == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
 }
 
-#use_virtualenv('rgee')
+use_virtualenv('rgee')
 
 
 # Set environment variable for authentication
@@ -19,8 +19,7 @@ Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = "private-key.json")
 ee_Initialize(
   user = creds_json$client_email,
   drive = FALSE,
-  gcs = FALSE,
-  auth_mode = 4
+  gcs = FALSE
 )
 
 # 2. Load data and wrapper functions ----
