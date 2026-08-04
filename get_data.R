@@ -1,8 +1,16 @@
 library(jsonlite)
+library(rgee)
+library(reticulate)
+
+
+use_virtualenv("rgee")
+
+ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
+                         drive = TRUE,
+                         gcs = FALSE)
 
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
 creds_json <- Sys.setenv(
-  GOOGLE_APPLICATION_CREDENTIALS = normalizePath("sa_key.json")
 )
 
 if (creds_json == "") {
