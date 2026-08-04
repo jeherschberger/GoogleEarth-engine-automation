@@ -24,11 +24,7 @@ jobs:
         run: |
           install.packages(c("rgee", "reticulate"))
         shell: Rscript {0}
-        
-      - name: Setup Python and earthengine-api
-        run: |
-          pip3 install earthengine-api
-          
+         
       - name: Authenticate GEE
         env:
           GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
@@ -37,6 +33,7 @@ jobs:
           echo "$GEE_PRIVATE_KEY" > private-key.json
           Rscript -e "
             library(rgee)
+            ee_install()
             ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
                          drive = TRUE,
                          gcs = FALSE)
