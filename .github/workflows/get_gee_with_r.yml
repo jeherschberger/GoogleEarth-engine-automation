@@ -24,6 +24,14 @@ jobs:
         run: |
           install.packages(c("rgee", "reticulate"))
         shell: Rscript {0}
+
+
+      - name: Install rgee python
+        run:
+            Rscript -e "
+            library(rgee)
+            ee_install(py_env = 'rgee')
+            "
          
       - name: Authenticate GEE
         env:
@@ -33,7 +41,6 @@ jobs:
           echo "$GEE_PRIVATE_KEY" > private-key.json
           Rscript -e "
             library(rgee)
-            ee_install()
             ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
                          drive = TRUE,
                          gcs = FALSE)
