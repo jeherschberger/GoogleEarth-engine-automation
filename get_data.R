@@ -20,7 +20,7 @@ ee_Initialize(
   user = creds_json$client_email,
   drive = FALSE,
   gcs = FALSE,
-  auth_mode = "gcloud",
+  auth_mode = "none",
   quiet=TRUE,
   auth_quiet=TRUE
 )
