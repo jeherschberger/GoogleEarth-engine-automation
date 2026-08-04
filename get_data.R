@@ -5,9 +5,7 @@ library(jsonlite)
 creds_json <- Sys.getenv("EARTHENGINE_TOKEN")
 
 if (creds_json != "") {
-  cred_path <- expandPath("~/.config/earthengine")
-  if (!dir.exists(cred_path)) dir.create(cred_path, recursive = TRUE)
-  writeLines(creds_json, file.path(cred_path, "credentials"))
+  print("Please add GoogleEarth Engine secret key to repository!!")
 }
 
 # 2. Initialize Earth Engine (Replace with your actual GCP Project ID)
