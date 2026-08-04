@@ -35,10 +35,6 @@ jobs:
             library(rgee)
             library(reticulate)
             ee_install(py_env = 'rgee', confirm = FALSE)
-            
-            ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
-                         drive = TRUE,
-                         gcs = FALSE)
           "
           
       - name: Run GEE script
