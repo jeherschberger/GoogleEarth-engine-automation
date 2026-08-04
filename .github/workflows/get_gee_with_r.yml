@@ -41,6 +41,8 @@ jobs:
           echo "$GEE_PRIVATE_KEY" > private-key.json
           Rscript -e "
             library(rgee)
+            library(reticulate)
+            use_virtualenv("rgee")
             ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
                          drive = TRUE,
                          gcs = FALSE)
