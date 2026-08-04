@@ -38,4 +38,4 @@ jobs:
           GEE_PRIVATE_KEY: ${{ secrets.EARTH_ENGINE_KEY }}
         run: |
              echo "$GEE_PRIVATE_KEY" > private-key.json
-             Rscript get_data.R
+             #Rscript get_data.R
