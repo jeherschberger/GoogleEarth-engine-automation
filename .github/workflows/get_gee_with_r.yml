@@ -31,9 +31,6 @@ jobs:
           Rscript -e "
           library(rgee)
           library(reticulate)
-          virtualenv_create("rgee")
-          py_install("numpy","rgee")
-          py_install("earthengine-api","rgee")
           "
          
       - name: Authenticate GEE
@@ -43,7 +40,8 @@ jobs:
         run: |
           echo "$GEE_PRIVATE_KEY" > private-key.json
           Rscript -e "
-            use_virtualenv("rgee")
+            ee_install(py_env = 'rgee', confirm = FALSE)
+            use_virtualenv('rgee')
             ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
                          drive = TRUE,
                          gcs = FALSE)
