@@ -9,7 +9,7 @@ if (creds_json$private_key == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
 }
 
-use_virtualenv('rgee')
+#use_virtualenv('rgee')
 
 
 # Set environment variable for authentication
