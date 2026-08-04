@@ -26,18 +26,16 @@ jobs:
         shell: Rscript {0}
          
       - name: Authenticate GEE
+        run: |
+          Rscript -e "
+            library(rgee)
+            ee_install(py_env = 'rgee', confirm = FALSE)
+            "
+          
+      - name: Run GEE script
         env:
           GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
           GEE_PRIVATE_KEY: ${{ secrets.EARTH_ENGINE_KEY }}
         run: |
-          echo "$GEE_PRIVATE_KEY" > private-key.json
-          Rscript -e "
-            library(rgee)
-            library(reticulate)
-            ee_install(py_env = 'rgee', confirm = FALSE)
-             # Authenticate with service account
-            ee_Initialize(drive = FALSE, gcs = FALSE)
-            "
-          
-      - name: Run GEE script
-        run: Rscript get_data.R
+             echo "$GEE_PRIVATE_KEY" > private-key.json
+             Rscript get_data.R
