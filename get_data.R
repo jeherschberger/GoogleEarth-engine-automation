@@ -11,7 +11,17 @@ if (creds_json == "") {
 
 use_virtualenv("rgee")
 
-ee_Initialize(drive = FALSE, gcs = FALSE)
+
+# Set environment variable for authentication
+Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = "private-key.json")
+
+# Initialize Earth Engine
+ee_Initialize(
+  user = creds_json$client_email,
+  drive = FALSE,
+  gcs = FALSE,
+  auth_mode = 4
+)
 
 # 2. Load data and wrapper functions ----
 ## load survey-level data (summarized from script 01)
