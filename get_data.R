@@ -20,7 +20,7 @@ ee_Initialize(
   user = creds_json$client_email,
   drive = FALSE,
   gcs = FALSE,
-  auth_mode = 4
+  auth_mode = "appdefault"
 )
 
 # 2. Load data and wrapper functions ----
