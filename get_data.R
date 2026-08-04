@@ -11,10 +11,6 @@ if (creds_json$private_key == "") {
 
 use_virtualenv('rgee')
 
-
-# Set environment variable for authentication
-Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = "private-key.json")
-
 # Initialize Earth Engine
 ee_Initialize(
   drive = FALSE,
