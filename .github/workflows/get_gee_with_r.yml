@@ -37,7 +37,7 @@ jobs:
 
     - name: Run R GEE Extraction
       env:
-        EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+        EARTHENGINE_TOKEN: ${{ secrets.EARTH_ENGINE_KEY }}
         # Automatically finds the exact path of the Python version configured above
         RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python 
       run: Rscript get_data.R
