@@ -5,9 +5,7 @@ library(reticulate)
 
 use_virtualenv("rgee")
 
-ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
-                         drive = TRUE,
-                         gcs = FALSE)
+ee_Initialize()
 
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
 creds_json <- Sys.setenv(
