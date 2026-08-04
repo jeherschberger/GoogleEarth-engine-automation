@@ -13,16 +13,12 @@ use_virtualenv('rgee')
 
 
 # Set environment variable for authentication
-#Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = "private-key.json")
+Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = "private-key.json")
 
 # Initialize Earth Engine
 ee_Initialize(
-  user = creds_json$client_email,
   drive = FALSE,
-  gcs = FALSE,
-  auth_mode = "gcloud",
-  quiet=TRUE,
-  auth_quiet=TRUE
+  gcs = FALSE
 )
 
 # 2. Load data and wrapper functions ----
