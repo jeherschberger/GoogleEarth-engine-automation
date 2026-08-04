@@ -40,7 +40,10 @@ jobs:
         EARTHENGINE_TOKEN: ${{ secrets.EARTH_ENGINE_KEY }}
         # Automatically finds the exact path of the Python version configured above
         RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python 
-      run: Rscript get_data.R
+      run: 
+        echo "$EARTHENGINE_TOKEN" > sa_key.json
+        export EARTHENGINE_TOKEN=$(pwd)/sa_key.json
+        Rscript get_data.R
 
     - name: Upload Weekly Data Artifact
       uses: actions/upload-artifact@v4
