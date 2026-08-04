@@ -41,5 +41,5 @@ jobs:
         run: |
              echo "$GEE_PRIVATE_KEY" > private-key.json
              source ~/.virtualenvs/rgee/bin/activate
-             python auth_gee.py
+             #python auth_gee.py
              Rscript get_data.R
