@@ -25,7 +25,7 @@ jobs:
           install.packages(c("rgee", "reticulate"))
         shell: Rscript {0}
          
-      - name: Authenticate GEE
+      - name: Install rgee dependancies
         run: |
           Rscript -e "
             library(rgee)
