@@ -34,15 +34,10 @@ jobs:
           Rscript -e "
             library(rgee)
             library(reticulate)
-            library(jsonlite)
             ee_install(py_env = 'rgee', confirm = FALSE)
-            creds <- fromJSON('private-key.json')
              # Authenticate with service account
-             ee_Authenticate(
-               email = creds\$client_email,
-               key = 'private-key.json',
-               quiet = TRUE
-              )"
+            ee_Initialize(drive = FALSE, gcs = FALSE)
+            "
           
       - name: Run GEE script
         run: Rscript get_data.R
