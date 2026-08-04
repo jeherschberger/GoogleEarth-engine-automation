@@ -1,5 +1,4 @@
 library(jsonlite)
-library(rgee)
 
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
 creds_json <- Sys.setenv(
@@ -10,14 +9,7 @@ if (creds_json == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
 }
 
-# 2. Initialize Earth Engine (Replace with your actual GCP Project ID) ----
-# rgee automatically manages the Python backend connection via reticulate
-ee_Initialize(project = "ee-jakeberger92",
-             auth_mode = "appdefault",
-             quiet = TRUE
-             )
-
-# 3. Load data and wrapper functions ----
+# 2. Load data and wrapper functions ----
 ## load survey-level data (summarized from script 01)
 
 source("GEE_wrapper_functions.R")
