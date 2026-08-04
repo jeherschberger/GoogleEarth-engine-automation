@@ -1,8 +1,13 @@
-library(rgee)
 library(jsonlite)
 
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
-creds_json <- Sys.getenv("EARTHENGINE_TOKEN")
+creds_json <- Sys.setenv(
+  GOOGLE_APPLICATION_CREDENTIALS = normalizePath("sa_key.json")
+)
+
+library(rgee)
+
+ee_clean_user_credentials()
 
 if (creds_json == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
