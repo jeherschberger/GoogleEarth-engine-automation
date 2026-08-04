@@ -4,7 +4,7 @@ library(jsonlite)
 # 1. Authenticate Earth Engine using your secret token string
 creds_json <- Sys.getenv("EARTHENGINE_TOKEN")
 
-if (creds_json != "") {
+if (creds_json == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
 }
 
