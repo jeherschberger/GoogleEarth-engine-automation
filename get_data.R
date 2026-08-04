@@ -3,7 +3,7 @@ library(rgee)
 library(reticulate)
 
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
-creds_json <- fromJSON('private-key.json')
+creds_json <- fromJSON('private-key.json')$private_key
 
 if (creds_json == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
