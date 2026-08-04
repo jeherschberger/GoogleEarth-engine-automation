@@ -30,7 +30,9 @@ jobs:
         run: |
           Rscript -e "
           library(rgee)
-          ee_install(py_env = 'rgee', confirm = FALSE)
+          virtualenv_create("rgee")
+          py_install("numpy","rgee")
+          py_install("earthengine-api","rgee")
           "
          
       - name: Authenticate GEE
