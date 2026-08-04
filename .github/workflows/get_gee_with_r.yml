@@ -1,52 +1,46 @@
-name: Weekly R Coordinate Batch Extraction
+name: GEE Data Workflow
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # Daily at midnight
+  workflow_dispatch:  # Manual trigger
 
 jobs:
-  batch-extract-r:
+  fetch-gee-data:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout repository code
-      uses: actions/checkout@v4
-
-    - name: Set up R
-      uses: r-lib/actions/setup-r@v2
-      with:
-        r-version: '4.6.1'     # 👈 Specify your exact R version here
-        use-public-rspm: true   # Ensures fast, pre-compiled binaries matching this version
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11' # Keep this stable to support rgee's reticulate wrapper
-
-    - name: Install System Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libcurl4-openssl-dev libssl-dev libgdal-dev libproj-dev libgeos-dev
-
-    - name: Install Python and R Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install earthengine-api numpy
-        Rscript -e "install.packages(c('rgee', 'jsonlite', 'reticulate'))"
-
-    - name: Run R GEE Extraction
-      env:
-        EARTHENGINE_TOKEN: ${{ secrets.EARTH_ENGINE_KEY }}
-        # Automatically finds the exact path of the Python version configured above
-        RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python 
-      run: |
-            echo "$EARTHENGINE_TOKEN" > sa_key.json
-            export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/sa_key.json"
-            Rscript get_data.R
-
-    - name: Upload Weekly Data Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: weekly-extracted-r-data
-        path: weekly_gee_data.csv
+      - uses: actions/checkout@v3
+      
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          
+      - name: Install R packages
+        run: |
+          install.packages(c("rgee", "reticulate"))
+        shell: Rscript {0}
+        
+      - name: Setup Python and earthengine-api
+        run: |
+          pip3 install earthengine-api
+          
+      - name: Authenticate GEE
+        env:
+          GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
+          GEE_PRIVATE_KEY: ${{ secrets.GEE_PRIVATE_KEY }}
+        run: |
+          echo "$GEE_PRIVATE_KEY" > private-key.json
+          Rscript -e "
+            library(rgee)
+            ee_Initialize(email = '$GEE_SERVICE_ACCOUNT', 
+                         drive = TRUE,
+                         gcs = FALSE)
+          "
+          
+      - name: Run GEE script
+        run: Rscript get_data.R
