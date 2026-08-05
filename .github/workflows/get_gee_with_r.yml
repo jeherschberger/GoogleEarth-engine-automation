@@ -24,7 +24,7 @@ jobs:
           
       - name: Install R packages
         run: |
-          install.packages(c("rgee", "reticulate"))
+          install.packages(c("rgee", "reticulate","tidyverse"))
         shell: Rscript {0}
          
       - name: Install rgee dependancies

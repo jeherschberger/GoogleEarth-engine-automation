@@ -1,5 +1,5 @@
 ## Extract multiple bands and dates from google earth engine----
-Extract_var_with_const_date <- function(loc,path,subpath,select,
+Extract_var_with_const_date <- function(loc,path,subpath,band,select,
                                         begin = 5,
                                         end=7,
                                         unit="month",
@@ -7,21 +7,35 @@ Extract_var_with_const_date <- function(loc,path,subpath,select,
                                         end1 =7,
                                         unit1 = "",
                                         buffer=1500,
-                                        scale=300) {
+                                        scale=500) {
   batch_size=round(sqrt(6000/(3.14*(buffer/scale)^2)))
-  print(batch_size)
+  #print(batch_size)
 
   if(select!=T){
-    terra<-ee$Image(as.character(path))
+    
+    if(nchar(subpath)==0) {
+    image<-ee$Image(as.character(path))
     n_images <- 1
-
+    } else if(nchar(band)>0) {
+      image<-ee$Image(as.character(paste0(path,subpath)))
+      if(nchar(band)>0) {
+        image<-image$select(as.character(band))
+      }
+      n_images <- 1
+    }
+    
+    if(nchar(band)==0) {
+    image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))$toBands()
+    print("hello")
+    n_images <- 1
+  }
 
   } else if(select==T){
-    terra<-ee$ImageCollection(as.character(path))$select(as.character(subpath))
-
+    
+    image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))
 
     if(nchar(unit)>1) {
-      terra<-terra$filter(
+      image<-image$filter(
         ee$Filter$calendarRange(
           begin,
           end,
@@ -31,7 +45,7 @@ Extract_var_with_const_date <- function(loc,path,subpath,select,
     }
 
     if(nchar(unit1)>1) {
-      terra<-terra$filter(
+      image<-image$filter(
         ee$Filter$calendarRange(
           begin1,
           end1,
@@ -41,7 +55,7 @@ Extract_var_with_const_date <- function(loc,path,subpath,select,
     }
 
 
-  n_images <- terra$size()$getInfo()
+  n_images <- image$size()$getInfo()
 }
 
   num_iterations <- ceiling(nrow(loc) / batch_size)
@@ -55,23 +69,24 @@ Extract_var_with_const_date <- function(loc,path,subpath,select,
     print(paste("Processing locations", start_row,"-",end_row, "of", nrow(loc)))
     # Extract current batch
     batch <- sf_as_ee(loc[start_row:end_row, ])$map(function(pt) {                         # pt is an ee.Feature
-      pt$buffer(buffer)
+      return(pt$buffer(buffer)) 
+      
     })
-
+    #print(ee_as_sf(batch))
 
     im_iter <- ceiling(n_images / batch_size)
 
 
     if(select!=T) {
-      row<-terra$sampleRegions(
+      row<-image$sampleRegions(
         collection = batch,
         scale = scale,
-        geometries = FALSE
+        geometries = T
       ) %>%
         ee_as_sf() %>% sf::st_drop_geometry()
 
       results[[paste(i)]]<-row
-
+      print(results)
 
     } else {
     for (j in 1:im_iter) {
@@ -81,7 +96,7 @@ Extract_var_with_const_date <- function(loc,path,subpath,select,
       print(paste("Processing images", start_im,"-",end_im, "of", n_images))
 
       # Get the i-th image (0-indexed in EE)
-      img <- ee$ImageCollection$fromImages(terra$toList(n_images)$slice(start_im,end_im))
+      img <- ee$ImageCollection$fromImages(image$toList(n_images)$slice(start_im,end_im))
 
     # Perform ee_extract for the current batch
     row <-img$map(
@@ -91,7 +106,7 @@ Extract_var_with_const_date <- function(loc,path,subpath,select,
         sampled <- img$sampleRegions(
           collection = batch,
           scale = scale,
-          geometries = FALSE
+          geometries = T
         )
         sampled$map(
           ee_utils_pyfunc(function(feature) {
