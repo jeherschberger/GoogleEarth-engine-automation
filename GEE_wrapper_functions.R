@@ -44,7 +44,7 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
         image
       }
       image <- image$reproject("EPSG:4326", NULL, 250)
-      n_images <- 1
+      n_images <- 10
     }
     
     
