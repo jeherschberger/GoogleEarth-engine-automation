@@ -50,7 +50,7 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
     
     if(nchar(band)==0) {
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))$toBands()
-    print("hello")
+    #print("hello")
     n_images <- 1
   }
 
@@ -103,7 +103,7 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
     )$map(function(pt) {
       return(pt$buffer(buffer))
     })
-    print(batch)
+    #print(batch)
 
     im_iter <- ceiling(n_images / batch_size)
 
@@ -117,7 +117,7 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
         ee_to_df()
 
       results[[paste(i)]]<-row
-      print(results)
+      #print(results)
 
     } else {
     for (j in 1:im_iter) {
