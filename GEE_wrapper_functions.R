@@ -10,6 +10,10 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
                                         scale=500) {
   batch_size=round(sqrt(6000/(3.14*(buffer/scale)^2)))
   
+  ee_to_df <- function(ee_obj) {
+    info <- ee_obj$getInfo()
+    map_df(info$features, ~as.data.frame(.$properties, stringsAsFactors = FALSE))
+  }
   
   standardize_coords <- function(df) {
     cols <- tolower(names(df))
@@ -33,13 +37,16 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
     if(nchar(subpath)==0) {
     image<-ee$Image(as.character(path))
     n_images <- 1
-    } else if(nchar(band)>0) {
+    } else if(nchar(subpath)>0) {
       image<-ee$Image(as.character(paste0(path,subpath)))
       if(nchar(band)>0) {
         image<-image$select(as.character(band))
+        image
       }
+      image <- image$reproject("EPSG:4326", NULL, 250)
       n_images <- 1
     }
+    
     
     if(nchar(band)==0) {
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))$toBands()
@@ -89,14 +96,14 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
       lapply(start_row:end_row, function(i) {
         props <- as.list(loc[i, ])
         ee$Feature(
-          ee$Geometry$Point(c(loc$lon[i], loc$lat[i])),
+          ee$Geometry$Point(c(loc$lon[i], loc$lat[i]), proj = "EPSG:4326"),
           props
         )
       })
     )$map(function(pt) {
       return(pt$buffer(buffer))
     })
-    #print(ee_as_sf(batch))
+    print(batch)
 
     im_iter <- ceiling(n_images / batch_size)
 
@@ -105,9 +112,9 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
       row<-image$sampleRegions(
         collection = batch,
         scale = scale,
-        geometries = T
+        geometries = F
       ) %>%
-        ee_as_sf() %>% sf::st_drop_geometry()
+        ee_to_df()
 
       results[[paste(i)]]<-row
       print(results)
@@ -130,7 +137,7 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
         sampled <- img$sampleRegions(
           collection = batch,
           scale = scale,
-          geometries = T
+          geometries = F
         )
         sampled$map(
           ee_utils_pyfunc(function(feature) {
@@ -138,7 +145,7 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
           })
         )
       })
-     )$flatten() %>% ee_as_sf() %>% sf::st_drop_geometry()
+     )$flatten() %>% ee_to_df()
     results[[paste(i,j)]]<-row
     }
 
