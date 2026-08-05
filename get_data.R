@@ -161,7 +161,9 @@ master_list <- list(
 data_final <- reduce(master_list, function(x, y) right_join(x, y))
 
 # 4. Export file as .csv for further processing in script 03 ####
-#write.csv(st_drop_geometry(data_survey), "data/data_survey_rawgradient.csv",row.names = F)
+data_survey<-rbind(data_final,data_gradients) |> rename("Long"=lon,
+                                                     "Lat"=lat,)
+write.csv(data_survey, "data/data_survey_rawgradient.csv",row.names = F)
 
 
 # Add code to only run new sample sites.
