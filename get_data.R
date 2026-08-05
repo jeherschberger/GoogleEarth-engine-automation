@@ -1,6 +1,5 @@
 library(jsonlite)
 library(rgee)
-library(sf)
 library(tidyverse)
 
 # 1. Authenticate Earth Engine using the secret token string stored on github secrets ----
@@ -10,10 +9,10 @@ if (creds_json$private_key == "") {
   print("Please add GoogleEarth Engine secret key to repository!!")
 }
 
-use_virtualenv('rgee')
+reticulate::use_virtualenv('rgee')
 
 # Initialize Earth Engine
-ee <- import("ee")
+ee <- reticulate::import("ee")
 credentials <- ee$ServiceAccountCredentials(
   creds_json$client_email,
   'private-key.json'
@@ -33,13 +32,12 @@ data_gradients<- read.csv('data/data_survey_rawgradient.csv')
 data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,]
 head(data_new)
 # 4. Extract gradient data ####
-pp1<-st_as_sf(data_new,coords = c("Long","Lat"),crs=4326)
 
 # The data was not re-scaled unless stated otherwise. 
 # See the links for information on various variables
 # data source: 
 # https://git.wur.nl/isric/soilgrids/soilgrids.notebooks/-/blob/master/markdown/access_on_gee.md
-data_soils<-Extract_var_with_const_date(pp1,"projects/soilgrids-isric/",'bdod_mean',"bdod_0-5cm_mean",F,unit = "",buffer=1000,scale=500)
+data_soils<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'bdod_mean',"bdod_0-5cm_mean",F,unit = "",buffer=1000,scale=500)
 
 # data source:
 # https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v200

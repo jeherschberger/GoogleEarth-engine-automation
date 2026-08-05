@@ -1,5 +1,5 @@
 ## Extract multiple bands and dates from google earth engine----
-Extract_var_with_const_date <- function(loc,path,subpath,band,select,
+Extract_var_with_const_date <- function(df,path,subpath,band,select,
                                         begin = 5,
                                         end=7,
                                         unit="month",
@@ -9,6 +9,23 @@ Extract_var_with_const_date <- function(loc,path,subpath,band,select,
                                         buffer=1500,
                                         scale=500) {
   batch_size=round(sqrt(6000/(3.14*(buffer/scale)^2)))
+  
+  
+  standardize_coords <- function(df) {
+    cols <- tolower(names(df))
+    
+    # Find latitude column
+    lat_idx <- grep("^lat|latitud|^y$|northing", cols)[1]
+    if (!is.na(lat_idx)) names(df)[lat_idx] <- "lat"
+    
+    # Find longitude column
+    lon_idx <- grep("^lon|^lng|longitud|^x$|easting", cols)[1]
+    if (!is.na(lon_idx)) names(df)[lon_idx] <- "lon"
+    
+    return(df)
+  }
+  
+  loc<-standardize_coords(df)
   #print(batch_size)
 
   if(select!=T){
@@ -68,9 +85,16 @@ Extract_var_with_const_date <- function(loc,path,subpath,band,select,
     end_row <- min(i * batch_size, nrow(loc))
     print(paste("Processing locations", start_row,"-",end_row, "of", nrow(loc)))
     # Extract current batch
-    batch <- sf_as_ee(loc[start_row:end_row, ])$map(function(pt) {                         # pt is an ee.Feature
-      return(pt$buffer(buffer)) 
-      
+    batch <- ee$FeatureCollection(
+      lapply(start_row:end_row, function(i) {
+        props <- as.list(loc[i, ])
+        ee$Feature(
+          ee$Geometry$Point(c(loc$lon[i], loc$lat[i])),
+          props
+        )
+      })
+    )$map(function(pt) {
+      return(pt$buffer(buffer))
     })
     #print(ee_as_sf(batch))
 
