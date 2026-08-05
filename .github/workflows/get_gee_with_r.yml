@@ -39,8 +39,9 @@ jobs:
           
       - name: Run GEE script
         env:
-          GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
+          #GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
           GEE_PRIVATE_KEY: ${{ secrets.EARTH_ENGINE_KEY }}
+          LD_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
              echo "$GEE_PRIVATE_KEY" > private-key.json
              source ~/.virtualenvs/rgee/bin/activate
