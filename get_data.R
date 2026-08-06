@@ -80,6 +80,8 @@ code_to_name <- c(
   "100" = "Moss"
 )
 
+print("Completed soils")
+
 data_land <- data_land |> 
   mutate(
     # in case the column is numeric, turn it into character so the names in
@@ -101,6 +103,7 @@ data_land <- data_land |>
               id_cols = surveyID)
   
 
+print("Completed land types")
 
 # data source:
 # https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD13A2
@@ -109,6 +112,7 @@ data_NVDI<-Extract_var_with_const_date(data_new,'MODIS/061/MOD13A2','NDVI',"",T,
   summarise(.by= c(surveyID,Year),
             Yearly_NDVI=mean(NDVI))
 
+print("Completed NDVI")
 # data source:
 # https://csidotinfo.wordpress.com/2019/01/24/global-aridity-index-and-potential-evapotranspiration-climate-database-v3/
 # This raster was downloaded and then multiplied by 0.0001 to set the original scale.
@@ -118,12 +122,14 @@ data_Aridity<-Extract_var_with_const_date(data_new,'projects/ee-jakeberger92/ass
   summarise(.by=surveyID,
             b1=mean(b1))
 
+print("Completed Aridity")
 # data source:
 # https://developers.google.com/earth-engine/datasets/catalog/WORLDCLIM_V1_BIO
 data_clims<-Extract_var_with_const_date(data_new,'WORLDCLIM/V1/BIO',"","climate",select=F,buffer = 500) |> 
   summarise(.by = surveyID,
             across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
 
+print("Completed climate")
 # data source:
 # https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#bands
 data_LAI_high<-Extract_var_with_const_date(data_new,'ECMWF/ERA5_LAND/MONTHLY_AGGR',"leaf_area_index_high_vegetation","",select=T,buffer = 500,unit="") |> 
@@ -137,7 +143,7 @@ data_LAI_low<-Extract_var_with_const_date(data_new,'ECMWF/ERA5_LAND/MONTHLY_AGGR
   summarise(.by= c(surveyID,Year),
             Yearly_leaf_area_index_low_vegetation=mean(leaf_area_index_low_vegetation))
 
-
+print("Completed leaf index")
 # data source: NPP
 # https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD17A3HGF
 data_npp<-Extract_var_with_const_date(data_new,"MODIS/061/MOD17A3HGF",c("Npp","Npp_QC"),
@@ -146,7 +152,7 @@ data_npp<-Extract_var_with_const_date(data_new,"MODIS/061/MOD17A3HGF",c("Npp","N
   summarise(.by = c(surveyID, Year),
             NPP_y=mean(Npp)/1e4)
 
-
+print("Completed leaf NPP")
 master_list <- list(
   joined_soil,
   data_land,
