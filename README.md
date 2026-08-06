@@ -5,7 +5,13 @@ This repository provides code that extracts data from the GoogleEarth Engine API
 3. The Aridity data needs access permission from jakeberger92@gmail.com.
 
 ## Incorporating a private service key to Github.
-
+### Creating a key
+1. Open the Google Cloud IAM & Admin Console.
+2. Click Create Service Account at the top.Give it a name (e.g., github-actions-gee), and click Create and Continue.
+3. Grant this account the Earth Engine Resource Viewer (or Earth Engine User) role.
+4. Click Done.
+5. Click on your newly created service account from the list, navigate to the Keys tab, click Add Key, and choose Create new key.
+6. Select JSON as the format and click Create. A .json file will automatically download to your computer.
 
 
 ### Adding the key to the GitHub repository.
