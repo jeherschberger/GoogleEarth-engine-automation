@@ -7,8 +7,8 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
                                         end1 =7,
                                         unit1 = "",
                                         buffer=1500,
-                                        scale=500) {
-  batch_size=round(sqrt(2500/(3.14*(buffer/scale)^2)))
+                                        scale=250) {
+  batch_size=round(sqrt(4500/(3.14*(buffer/scale)^2)))
   
   ee_to_df <- function(ee_obj) {
     info <- ee_obj$getInfo()
