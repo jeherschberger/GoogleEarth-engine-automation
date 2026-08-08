@@ -45,7 +45,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@://github.com"
-          git add data_survey_rawgradient.csv
+          git add data/data_survey_rawgradient.csv
           
           # Only commit and push if the R script actually changed the data
           if ! git diff --staged --quiet; then
