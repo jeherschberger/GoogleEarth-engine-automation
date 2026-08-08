@@ -7,8 +7,9 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
                                         end1 =7,
                                         unit1 = "",
                                         buffer=1500,
-                                        scale=250) {
-  batch_size=round(sqrt(4500/(3.14*(buffer/scale)^2)))
+                                        scale1=400) {
+  
+  
   
   ee_to_df <- function(ee_obj) {
     info <- ee_obj$getInfo()
@@ -43,19 +44,17 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
         image<-image$select(as.character(band))
         image
       }
-      image <- image$reproject("EPSG:4326", NULL, 250)
-      n_images <- 10
+      n_images<-1
     }
     
     
     if(nchar(band)==0) {
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))$toBands()
-    #print("hello")
-    n_images <- 1
+    n_images <- image$bandNames()$length()$getInfo()
   }
-
+  batch_size=round(sqrt(4000/(3.14*(buffer/scale1)^2)))*n_images
   } else if(select==T){
-    
+  batch_size=round(sqrt(4000/(3.14*(buffer/scale1)^2)))
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))
 
     if(nchar(unit)>1) {
@@ -80,7 +79,28 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
 
 
   n_images <- image$size()$getInfo()
-}
+  }
+  
+  fill_closest_neighbors <- function(img) {
+    # Radius = 1 targets the closest cardinal pixels
+    neighborhood_average <- img$focalMean(
+      radius = 4, 
+      kernelType = "circle", 
+      units = "pixels"
+    )
+    # Fill missing gaps using that neighborhood average
+    return(img$unmask(neighborhood_average))
+  }
+  
+  if (inherits(image, "ee.imagecollection.ImageCollection")) {
+    image <- image$map(fill_closest_neighbors)
+  } else {
+    image <- fill_closest_neighbors(image)
+  }
+  
+  
+  
+  
 
   num_iterations <- ceiling(nrow(loc) / batch_size)
 
@@ -93,10 +113,10 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
     print(paste("Processing locations", start_row,"-",end_row, "of", nrow(loc)))
     # Extract current batch
     batch <- ee$FeatureCollection(
-      lapply(start_row:end_row, function(i) {
-        props <- as.list(loc[i, ])
+      lapply(start_row:end_row, function(k) {
+        props <- as.list(loc[k, ])
         ee$Feature(
-          ee$Geometry$Point(c(loc$lon[i], loc$lat[i]), proj = "EPSG:4326"),
+          ee$Geometry$Point(c(loc$lon[k], loc$lat[k]), proj = "EPSG:4326"),
           props
         )
       })
@@ -111,7 +131,8 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
     if(select!=T) {
       row<-image$sampleRegions(
         collection = batch,
-        scale = scale,
+        scale = scale1,
+        projection = "EPSG:4326",
         geometries = F
       ) %>%
         ee_to_df()
@@ -136,7 +157,8 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
 
         sampled <- img$sampleRegions(
           collection = batch,
-          scale = scale,
+          scale = scale1,
+          projection = "EPSG:4326",
           geometries = F
         )
         sampled$map(

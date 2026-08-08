@@ -11,6 +11,7 @@ if (creds_json$private_key == "") {
 
 reticulate::use_virtualenv('rgee')
 
+
 # Initialize Earth Engine
 ee <- reticulate::import("ee")
 credentials <- ee$ServiceAccountCredentials(
@@ -26,10 +27,13 @@ ee$Initialize(credentials)
 source("GEE_wrapper_functions.R")
 
 data_survey <- read.csv('data/data_surveylevel_summarized.csv')
+cols<-colnames(data_survey)
 
 data_gradients<- read.csv('data/data_survey_rawgradient.csv')
+#data_gradients<- data.frame(col.names = cols) # Testing
 
-data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,]
+
+data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,][1:50,]
 head(data_new)
 # 4. Extract gradient data ####
 
@@ -37,19 +41,20 @@ head(data_new)
 # See the links for information on various variables
 # data source: 
 # https://git.wur.nl/isric/soilgrids/soilgrids.notebooks/-/blob/master/markdown/access_on_gee.md
-data_bdod_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'bdod_mean',"bdod_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_cec_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'cec_mean',"cec_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_cfvo_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'cfvo_mean',"cfvo_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_clay_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'clay_mean',"clay_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_nitrogen_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'nitrogen_mean',"nitrogen_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_ocd_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'ocd_mean',"ocd_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_phh2o_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'phh2o_mean',"phh2o_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_silt_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'silt_mean',"silt_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_sand_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'sand_mean',"sand_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
-data_soc_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'soc_mean',"soc_0-5cm_mean",F,unit = "",buffer=1000,scale=250)
+data_bdod_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'bdod_mean',"bdod_0-5cm_mean",F,unit = "",buffer=500)
+data_cec_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'cec_mean',"cec_0-5cm_mean",F,unit = "",buffer=500)
+data_cfvo_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'cfvo_mean',"cfvo_0-5cm_mean",F,unit = "",buffer=500)
+data_clay_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'clay_mean',"clay_0-5cm_mean",F,unit = "",buffer=500)
+data_nitrogen_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'nitrogen_mean',"nitrogen_0-5cm_mean",F,unit = "",buffer=500)
+data_ocd_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'ocd_mean',"ocd_0-5cm_mean",F,unit = "",buffer=500)
+data_phh2o_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'phh2o_mean',"phh2o_0-5cm_mean",F,unit = "",buffer=500)
+data_silt_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'silt_mean',"silt_0-5cm_mean",F,unit = "",buffer=500)
+data_sand_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'sand_mean',"sand_0-5cm_mean",F,unit = "",buffer=500)
+data_soc_soil<-Extract_var_with_const_date(data_new,"projects/soilgrids-isric/",'soc_mean',"soc_0-5cm_mean",F,unit = "",buffer=500)
 
 soil_list <- mget(ls(pattern = "_soil$"), envir = .GlobalEnv)
 
+soil_list$joined_soil<-NULL
 soil_mean <- lapply(soil_list, function(df) {
   df |> 
     select(-c(lat,lon)) |> 
@@ -64,7 +69,7 @@ joined_soil <- reduce(soil_mean, function(x, y) full_join(x, y,by='surveyID'))
 
 # data source:
 # https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v200
-data_land<-Extract_var_with_const_date(data_new,'ESA/WorldCover/v200',"Map",'',select=F,unit="",unit1="")
+data_land<-Extract_var_with_const_date(data_new,'ESA/WorldCover/v200',"Map",'',select=F,unit="",unit1="",buffer=2000,scale=500)
 
 code_to_name <- c(
   "10" = "Tree cover",
@@ -110,7 +115,7 @@ print("Completed land types")
 data_NVDI<-Extract_var_with_const_date(data_new,'MODIS/061/MOD13A2','NDVI',"",T,unit="",unit1="",buffer=500) |> 
   mutate(Year=year(image_date)) |>
   summarise(.by= c(surveyID,Year),
-            Yearly_NDVI=mean(NDVI))
+            Yearly_NDVI=mean(NDVI,na.rm=T))
 
 print("Completed NDVI")
 # data source:
@@ -120,7 +125,7 @@ print("Completed NDVI")
 data_Aridity<-Extract_var_with_const_date(data_new,'projects/ee-jakeberger92/assets/Aridity',"","Aridity",select=F,buffer = 500) |> 
   select(surveyID,b1) |> 
   summarise(.by=surveyID,
-            b1=mean(b1))
+            b1=mean(b1,na.rm=T))
 
 print("Completed Aridity")
 # data source:
@@ -147,28 +152,32 @@ print("Completed leaf index")
 # data source: NPP
 # https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD17A3HGF
 data_npp<-Extract_var_with_const_date(data_new,"MODIS/061/MOD17A3HGF",c("Npp","Npp_QC"),
-                                              unit="",select = T,buffer = 1000) %>%   filter(Npp_QC <= 30) %>% 
+                                              unit="",select = T,buffer = 500) %>%   
+  #filter(Npp_QC <= 30) %>% 
   mutate(Year=year(image_date))%>% 
   summarise(.by = c(surveyID, Year),
-            NPP_y=mean(Npp)/1e4)
+            NPP_y=mean(Npp,na.rm=T)/1e4,
+            Npp_QC=mean(Npp_QC,na.rm=T))
 
 print("Completed leaf NPP")
 master_list <- list(
   joined_soil,
   data_land,
-  data_NVDI,
-  data_Aridity,
   data_clims,
+  data_Aridity,
+  data_npp,
+  data_NVDI,
   data_LAI_high,
-  data_LAI_low,
-  data_npp
+  data_LAI_low
 )
 
 data_final <- reduce(master_list, function(x, y) right_join(x, y))
 
 # 4. Export file as .csv for further processing in script 03 ####
-data_survey<-rbind(data_final,data_gradients) |> rename("Long"=lon,
-                                                     "Lat"=lat,)
+data_survey<- data_final|> 
+  rename("Long"=lon,"Lat"=lat) |> 
+        bind_rows(data_gradients)
+
 write.csv(data_survey, "data/data_survey_rawgradient.csv",row.names = F)
 
 
