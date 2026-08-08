@@ -40,3 +40,17 @@ jobs:
         run: |
              echo "$GEE_PRIVATE_KEY" > private-key.json
              Rscript get_data.R
+
+      - name: Commit and push updated CSV
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add data_survey_rawgradient.csv
+          
+          # Only commit and push if the R script actually changed the data
+          if ! git diff --staged --quiet; then
+            git commit -m "Automated CSV update via R script"
+            git push
+          else
+            echo "No changes detected in CSV. Skipping push."
+          fi
