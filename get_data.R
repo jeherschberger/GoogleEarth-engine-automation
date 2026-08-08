@@ -33,7 +33,7 @@ data_gradients<- read.csv('data/data_survey_rawgradient.csv')
 #data_gradients<- data.frame(col.names = cols) # Testing
 
 
-data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,][1:100,]
+data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,][1:10,]
 head(data_new)
 # 4. Extract gradient data ####
 
