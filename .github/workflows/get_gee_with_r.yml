@@ -2,7 +2,7 @@ name: GEE Data Workflow
 
 on:
   schedule:
-    - cron: '0 0 * * 0'  # Daily at midnight
+    - cron: '0 */2 * * *'
   workflow_dispatch:  # Manual trigger
 
 jobs:
