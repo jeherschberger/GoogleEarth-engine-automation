@@ -52,9 +52,9 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))$toBands()
     n_images <- image$bandNames()$length()$getInfo()
   }
-  batch_size=round(sqrt(3500/(3.14*(buffer/scale1)^2)))*n_images
+  batch_size=round(sqrt(3000/(3.14*(buffer/scale1)^2)))*n_images
   } else if(select==T){
-  batch_size=round(sqrt(3500/(3.14*(buffer/scale1)^2)))
+  batch_size=round(sqrt(3000/(3.14*(buffer/scale1)^2)))
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))
 
     if(nchar(unit)>1) {
