@@ -26,14 +26,14 @@ ee$Initialize(credentials)
 
 source("GEE_wrapper_functions.R")
 
-data_survey <- read.csv('data/data_surveylevel_summarized.csv')
+data_survey <- read_csv('data/data_surveylevel_summarized.csv')
 cols<-colnames(data_survey)
 
-data_gradients<- read.csv('data/data_survey_rawgradient.csv')
+data_gradients<- read_csv('data/data_survey_rawgradient.csv')
 #data_gradients<- data.frame(col.names = cols) # Testing
 
 
-data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,][1:100,]
+data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,][1:30,]
 head(data_new)
 # 4. Extract gradient data ####
 
@@ -178,7 +178,7 @@ data_survey<- data_final|>
   rename("Long"=lon,"Lat"=lat) |> 
         bind_rows(data_gradients)
 
-write.csv(data_survey, "data/data_survey_rawgradient.csv",row.names = F)
+write_csv(data_survey, "data/data_survey_rawgradient.csv")
 
 
 # Add code to only run new sample sites.
