@@ -88,7 +88,7 @@ if (inherits(image, "ee.imagecollection.ImageCollection")) {
 
   print(paste(num_bands, "Bands"))
   
-  batch_size=round(round(sqrt(4500/(3.14*(buffer/scale1)^2)))/num_bands)
+  batch_size=max(1, round(round(sqrt(3500/(3.14*(buffer/scale1)^2)))/num_bands))
   
   fill_closest_neighbors <- function(img) {
     # Radius = 1 targets the closest cardinal pixels
@@ -153,12 +153,14 @@ if (inherits(image, "ee.imagecollection.ImageCollection")) {
     for (j in 1:im_iter) {
       start_im <- (j - 1) * batch_size + 1
       end_im <- min(j * batch_size, n_images)
-
+      slice_size <- end_im - (start_im - 1)
+      
       print(paste("Processing images", start_im,"-",end_im, "of", n_images))
-
-      # Get the i-th image (0-indexed in EE)
-      img <- ee$ImageCollection$fromImages(image$toList(n_images)$slice(start_im-1,end_im))
-
+      
+      # Optimize: Only pull the specific range size into the list
+      img_list <- image$toList(count = slice_size, offset = start_im - 1)
+      img <- ee$ImageCollection$fromImages(img_list)
+      
     # Perform ee_extract for the current batch
     row <-img$map(
       ee_utils_pyfunc(function(img) {
