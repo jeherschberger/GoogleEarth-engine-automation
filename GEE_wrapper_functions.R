@@ -52,9 +52,8 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))$toBands()
     n_images <- image$bandNames()$length()$getInfo()
   }
-  batch_size=round(sqrt(2500/(3.14*(buffer/scale1)^2)))*n_images
+ 
   } else if(select==T){
-  batch_size=round(sqrt(2500/(3.14*(buffer/scale1)^2)))
     image<-ee$ImageCollection(as.character(path))$select(as.character(subpath))
 
     if(nchar(unit)>1) {
@@ -80,11 +79,19 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
 
   n_images <- image$size()$getInfo()
   }
+
+if (inherits(image, "ee.imagecollection.ImageCollection")) {
+  num_bands <- image$first()$bandNames()$length()$getInfo()
+} else {
+  num_bands <- image$bandNames()$length()$getInfo()
+}
+
+  batch_size=round(sqrt(4500/(3.14*(buffer/scale1)^2)))*num_bands
   
   fill_closest_neighbors <- function(img) {
     # Radius = 1 targets the closest cardinal pixels
     neighborhood_average <- img$focalMean(
-      radius = 12, 
+      radius = 6, 
       kernelType = "circle", 
       units = "pixels"
     )
