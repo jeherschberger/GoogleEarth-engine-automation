@@ -125,7 +125,7 @@ print("Completed NDVI")
 data_Aridity<-Extract_var_with_const_date(data_new,'projects/ee-jakeberger92/assets/Aridity',"","Aridity",select=F,buffer = 500) |> 
   select(surveyID,b1) |> 
   summarise(.by=surveyID,
-            b1=mean(b1,na.rm=T))
+            Aridity=mean(b1,na.rm=T))
 
 print("Completed Aridity")
 # data source:
