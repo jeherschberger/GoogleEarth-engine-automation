@@ -165,13 +165,13 @@ master_list <- list(
   data_land,
   data_clims,
   data_Aridity,
-  data_npp,
-  data_NVDI,
   data_LAI_high,
-  data_LAI_low
+  data_LAI_low,
+  data_npp,
+  data_NVDI
 )
 
-data_final <- reduce(master_list, function(x, y) right_join(x, y))
+data_final <- reduce(master_list, function(x, y) left_join(x, y))
 
 # 4. Export file as .csv for further processing in script 03 ####
 data_survey<- data_final|> 

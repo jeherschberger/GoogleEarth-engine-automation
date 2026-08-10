@@ -84,7 +84,7 @@ Extract_var_with_const_date <- function(df,path,subpath,band,select,
   fill_closest_neighbors <- function(img) {
     # Radius = 1 targets the closest cardinal pixels
     neighborhood_average <- img$focalMean(
-      radius = 4, 
+      radius = 12, 
       kernelType = "circle", 
       units = "pixels"
     )
