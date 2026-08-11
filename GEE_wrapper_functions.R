@@ -88,7 +88,9 @@ if (inherits(image, "ee.imagecollection.ImageCollection")) {
 
   print(paste(num_bands, "Bands"))
   
-  batch_size=max(1, floor(2500/(3.14*(buffer/scale1)^2)/num_bands))
+  ratio <- buffer / scale1
+  safety_factor <- 1 / sqrt(ratio)
+  batch_size <- max(1, floor(5000 * safety_factor / (3.14 * (buffer/scale1)^2) / num_bands))
   
   fill_closest_neighbors <- function(img) {
     # Radius = 1 targets the closest cardinal pixels
@@ -134,7 +136,7 @@ if (inherits(image, "ee.imagecollection.ImageCollection")) {
     })
     #print(batch)
     
-    batch_size_img <- max(1, floor(2500 / (3.14 * (buffer/scale1)^2) / num_bands / (end_row - start_row + 1)))
+    batch_size_img <- max(1, batch_size / (end_row - start_row + 1))
 
     im_iter <- ceiling(n_images / batch_size_img)
 
