@@ -136,7 +136,7 @@ if (inherits(image, "ee.imagecollection.ImageCollection")) {
     })
     #print(batch)
     
-    batch_size_img <- max(1, batch_size / (end_row - start_row + 1))
+    batch_size_img <- max(1, floor(batch_size / (end_row - start_row + 1)))
 
     im_iter <- ceiling(n_images / batch_size_img)
 
