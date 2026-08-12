@@ -36,6 +36,13 @@ data_gradients<- read_csv('data/data_survey_rawgradient.csv')
 data_new<-data_survey[!data_survey$surveyID %in% data_gradients$surveyID,][,] |> 
   drop_na()
 head(data_new)
+
+
+
+if(nrow(data_new)==0){
+  message("No new data...stopping the data retrieval process.")
+  invokeRestart("abort")
+}
 # 4. Extract gradient data ####
 
 # The data was not re-scaled unless stated otherwise. 
