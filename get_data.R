@@ -41,7 +41,7 @@ head(data_new)
 
 if(nrow(data_new)==0){
   message("No new data...stopping the data retrieval process.")
-  invokeRestart("abort")
+  quit(save = "no", status = 0)
 }
 # 4. Extract gradient data ####
 
